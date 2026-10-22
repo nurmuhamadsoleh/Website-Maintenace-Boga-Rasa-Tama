@@ -6,7 +6,9 @@ export function proxy(request: NextRequest) {
 
   const destination = request.nextUrl.clone();
   destination.pathname = "/maintenance";
-  const response = NextResponse.rewrite(destination, { status: 503 });
+  const response = request.nextUrl.pathname === "/maintenance"
+    ? NextResponse.next({ status: 503 })
+    : NextResponse.rewrite(destination, { status: 503 });
   response.headers.set("Retry-After", "3600");
   response.headers.set("X-Robots-Tag", "noindex, nofollow");
   response.headers.set("Cache-Control", "no-store, max-age=0");
